@@ -1,18 +1,38 @@
 /* ============================================================
-   PIXEL NAMES - STUDENT-FRIENDLY CODE MAP
-   The language conversion rules are kept intact so the website
-   keeps its nine-language feature. Read the section comments.
+   PIXEL NAMES
+   The website converts names into approximate sound spellings
+   and displays them as pixel art.
    ============================================================ */
 
-// 2. PIXEL LETTERS: each number describes one row of tiny pixels.
-const F={A:[14,17,17,31,17,17,17],B:[30,17,17,30,17,17,30],C:[14,17,16,16,16,17,14],D:[30,17,17,17,17,17,30],E:[31,16,16,30,16,16,31],F:[31,16,16,30,16,16,16],G:[14,17,16,23,17,17,15],H:[17,17,17,31,17,17,17],I:[14,4,4,4,4,4,14],J:[7,2,2,2,2,18,12],K:[17,18,20,24,20,18,17],L:[16,16,16,16,16,16,31],M:[17,27,21,21,17,17,17],N:[17,17,25,21,19,17,17],O:[14,17,17,17,17,17,14],P:[30,17,17,30,16,16,16],Q:[14,17,17,17,21,18,13],R:[30,17,17,30,20,18,17],S:[15,16,16,14,1,1,30],T:[31,4,4,4,4,4,4],U:[17,17,17,17,17,17,14],V:[17,17,17,17,17,10,4],W:[17,17,17,21,21,21,10],X:[17,17,10,4,10,17,17],Y:[17,17,10,4,4,4,4],Z:[31,1,2,4,8,16,31],'-':[0,0,0,31,0,0,0],"'":[4,4,8,0,0,0,0],'.':[0,0,0,0,0,12,12]};
+// 1. PIXEL LETTERS
+const F={
+A:[14,17,17,31,17,17,17],B:[30,17,17,30,17,17,30],
+C:[14,17,16,16,16,17,14],D:[30,17,17,17,17,17,30],
+E:[31,16,16,30,16,16,31],F:[31,16,16,30,16,16,16],
+G:[14,17,16,23,17,17,15],H:[17,17,17,31,17,17,17],
+I:[14,4,4,4,4,4,14],J:[7,2,2,2,2,18,12],
+K:[17,18,20,24,20,18,17],L:[16,16,16,16,16,16,31],
+M:[17,27,21,21,17,17,17],N:[17,17,25,21,19,17,17],
+O:[14,17,17,17,17,17,14],P:[30,17,17,30,16,16,16],
+Q:[14,17,17,17,21,18,13],R:[30,17,17,30,20,18,17],
+S:[15,16,16,14,1,1,30],T:[31,4,4,4,4,4,4],
+U:[17,17,17,17,17,17,14],V:[17,17,17,17,17,10,4],
+W:[17,17,17,21,21,21,10],X:[17,17,10,4,10,17,17],
+Y:[17,17,10,4,4,4,4],Z:[31,1,2,4,8,16,31],
+'-':[0,0,0,31,0,0,0],"'":[4,4,8,0,0,0,0],
+'.':[0,0,0,0,0,12,12]
+};
 
-// Small marks used for accented letters such as é and ü.
-const MK={'\u0301':[2,4],'\u0300':[8,4],'\u0302':[4,10],'\u0308':[10,0],'\u0303':[12,3],'\u030a':[12,12],'\u030c':[10,4]};
+const MK={
+'\u0301':[2,4],'\u0300':[8,4],'\u0302':[4,10],
+'\u0308':[10,0],'\u0303':[12,3],'\u030a':[12,12],
+'\u030c':[10,4]
+};
 
-// 3. TURN ENGLISH LETTERS INTO A GRID OF PIXELS.
+// 2. MAKE PIXEL GRIDS FOR LATIN LETTERS
 function latinGrid(str){
   const T=[];
+
   for(const ch of str.toUpperCase().normalize('NFD')){
     if(/[\u0300-\u036f]/.test(ch)){
       if(!T.length)return null;
@@ -26,6 +46,7 @@ function latinGrid(str){
 
   for(const t of T){
     if(t.c!==' '&&!F[t.c])return null;
+
     for(const m of t.m){
       if(!MK[m]&&m!=='\u0327'&&m!=='\u0328')return null;
     }
@@ -36,6 +57,7 @@ function latinGrid(str){
   const o=top?2:0;
   const h=o+7+(bot?1:0);
   const w=T.reduce((s,t)=>s+(t.c===' '?3:5)+1,-1);
+
   const cells=Array.from({length:h},()=>new Uint8Array(w));
   let x=0;
 
@@ -71,7 +93,7 @@ function latinGrid(str){
   return {w,h,cells};
 }
 
-// Draw other writing systems on a hidden canvas and read the pixels.
+// 3. TURN WRITING INTO PIXELS
 function raster(text,size,font,rtl,wt){
   const c=document.createElement('canvas');
   const g=c.getContext('2d',{willReadFrequently:true});
@@ -123,7 +145,7 @@ function raster(text,size,font,rtl,wt){
   return {w,h,cells};
 }
 
-// Prepare a name so the language rules can read it consistently.
+// Prepare names for the language rules.
 const clean=n=>n.normalize('NFD')
   .replace(/[\u0300-\u036f]/g,'')
   .toLowerCase()
@@ -133,15 +155,32 @@ const clean=n=>n.normalize('NFD')
   .split(/\s+/)
   .filter(Boolean);
 
-// 4. LANGUAGE RULES: these lookup tables match sounds to characters.
-
-// Japanese Katakana sound spelling.
-const K={'':'アイウエオ',k:'カキクケコ',g:'ガギグゲゴ',s:'サシスセソ',z:'ザジズゼゾ',n:'ナニヌネノ',h:'ハヒフヘホ',b:'バビブベボ',p:'パピプペポ',m:'マミムメモ',r:'ラリルレロ',y:['ヤ','イ','ユ','イェ','ヨ'],w:['ワ','ウィ','ウ','ウェ','ウォ'],f:['ファ','フィ','フ','フェ','フォ'],v:['ヴァ','ヴィ','ヴ','ヴェ','ヴォ'],t:['タ','ティ','トゥ','テ','ト'],d:['ダ','ディ','ドゥ','デ','ド'],sh:['シャ','シ','シュ','シェ','ショ'],ch:['チャ','チ','チュ','チェ','チョ'],j:['ジャ','ジ','ジュ','ジェ','ジョ']};
+// 4. JAPANESE
+const K={
+'':'アイウエオ',k:'カキクケコ',g:'ガギグゲゴ',
+s:'サシスセソ',z:'ザジズゼゾ',n:'ナニヌネノ',
+h:'ハヒフヘホ',b:'バビブベボ',p:'パピプペポ',
+m:'マミムメモ',r:'ラリルレロ',
+y:['ヤ','イ','ユ','イェ','ヨ'],
+w:['ワ','ウィ','ウ','ウェ','ウォ'],
+f:['ファ','フィ','フ','フェ','フォ'],
+v:['ヴァ','ヴィ','ヴ','ヴェ','ヴォ'],
+t:['タ','ティ','トゥ','テ','ト'],
+d:['ダ','ディ','ドゥ','デ','ド'],
+sh:['シャ','シ','シュ','シェ','ショ'],
+ch:['チャ','チ','チュ','チェ','チョ'],
+j:['ジャ','ジ','ジュ','ジェ','ジョ']
+};
 
 const KD={t:'ト',d:'ド',sh:'シュ',ch:'チ',j:'ジ',h:'ハ'};
 
 function kana(w){
-  w=w.replace(/ph/g,'f').replace(/th/g,'t').replace(/kh/g,'k').replace(/gh/g,'g').replace(/ck/g,'k').replace(/qu/g,'kw').replace(/x/g,'ks').replace(/q/g,'k').replace(/c(?=[eiy])/g,'s').replace(/c/g,'k').replace(/l/g,'r');
+  w=w.replace(/ph/g,'f').replace(/th/g,'t')
+    .replace(/kh/g,'k').replace(/gh/g,'g')
+    .replace(/ck/g,'k').replace(/qu/g,'kw')
+    .replace(/x/g,'ks').replace(/q/g,'k')
+    .replace(/c(?=[eiy])/g,'s').replace(/c/g,'k')
+    .replace(/l/g,'r');
 
   const V='aeiou';
   let o='',i=0;
@@ -193,8 +232,13 @@ function kana(w){
   return o;
 }
 
-// Arabic sound spelling (Arabic is read from right to left).
-const AC={b:'ب',d:'د',f:'ف',h:'ه',j:'ج',k:'ك',l:'ل',m:'م',n:'ن',p:'ب',q:'ق',r:'ر',s:'س',t:'ت',v:'ف',w:'و',y:'ي',z:'ز',sh:'ش',ch:'تش',th:'ث',kh:'خ',gh:'غ',ph:'ف',dh:'ذ',ck:'ك'};
+// 5. ARABIC
+const AC={
+b:'ب',d:'د',f:'ف',h:'ه',j:'ج',k:'ك',l:'ل',
+m:'م',n:'ن',p:'ب',q:'ق',r:'ر',s:'س',t:'ت',
+v:'ف',w:'و',y:'ي',z:'ز',sh:'ش',ch:'تش',
+th:'ث',kh:'خ',gh:'غ',ph:'ف',dh:'ذ',ck:'ك'
+};
 
 function arabic(w){
   const V='aeiou';
@@ -235,7 +279,6 @@ function arabic(w){
 
     if(c==='c')r=/[eiy]/.test(nx||'')?'س':'ك';
     if(c==='g')r=/[eiy]/.test(nx||'')?'ج':'غ';
-
     if(c==='x')r='كس';
 
     if(r&&c!==prev)o+=r;
@@ -247,17 +290,29 @@ function arabic(w){
   return o;
 }
 
+// 6. KOREAN
 const KR='Apple SD Gothic Neo,Malgun Gothic,Noto Sans CJK KR,Noto Sans KR,sans-serif';
-const ZH='PingFang SC,Microsoft YaHei,Noto Sans CJK SC,Noto Sans SC,sans-serif';
 
-const prep=w=>w.replace(/ph/g,'f').replace(/th/g,'t').replace(/kh/g,'k').replace(/gh/g,'g').replace(/ck/g,'k').replace(/qu/g,'kw').replace(/x/g,'ks').replace(/q/g,'k').replace(/c(?=[eiy])/g,'s').replace(/c/g,'k').replace(/([^aeiou])\1/g,'$1');
+const prep=w=>w.replace(/ph/g,'f').replace(/th/g,'t')
+  .replace(/kh/g,'k').replace(/gh/g,'g')
+  .replace(/ck/g,'k').replace(/qu/g,'kw')
+  .replace(/x/g,'ks').replace(/q/g,'k')
+  .replace(/c(?=[eiy])/g,'s').replace(/c/g,'k')
+  .replace(/([^aeiou])\1/g,'$1');
 
-// Korean Hangul sound spelling.
 function hangul(w){
-  w=prep(w).replace(/er$/,'ə').replace(/([aeiou])r$/,'$1').replace(/y(?![aeiou])/g,'i').replace(/w(?![aeiou])/g,'u');
+  w=prep(w).replace(/er$/,'ə')
+    .replace(/([aeiou])r$/,'$1')
+    .replace(/y(?![aeiou])/g,'i')
+    .replace(/w(?![aeiou])/g,'u');
 
   const V='aeiouə';
-  const ON={g:0,n:2,d:3,r:5,l:5,m:6,b:7,s:9,j:12,z:12,ch:14,k:15,t:16,p:17,f:17,v:7,h:18,sh:9};
+
+  const ON={
+    g:0,n:2,d:3,r:5,l:5,m:6,b:7,s:9,j:12,z:12,
+    ch:14,k:15,t:16,p:17,f:17,v:7,h:18,sh:9
+  };
+
   const VW={a:0,e:5,i:20,o:8,u:13,'ə':4};
   const VY={a:2,e:7,i:20,o:12,u:17,'ə':6};
   const VX={a:9,e:15,i:16,o:14,u:13,'ə':14};
@@ -310,11 +365,26 @@ function hangul(w){
   return S.map(s=>String.fromCharCode(0xAC00+(s.o*21+s.v)*28+s.c)).join('');
 }
 
-const CH={'':'阿埃伊奥乌',b:'巴贝比博布',c:'卡塞西科库',d:'达德迪多杜',f:'法费菲福富',g:'加格吉戈古',h:'哈赫希霍胡',j:'贾杰吉乔朱',k:'卡凯基科库',l:'拉勒利洛卢',m:'马梅米莫穆',n:'娜内尼诺努',p:'帕佩皮波普',r:'拉雷里洛鲁',s:'萨塞西索苏',t:'塔特蒂托图',v:'瓦维维沃武',w:'瓦韦威沃乌',y:'雅耶伊约尤',z:'扎泽兹佐祖',sh:'沙谢希肖舒',ch:'查切奇乔楚'};
+// 7. CHINESE
+const ZH='PingFang SC,Microsoft YaHei,Noto Sans CJK SC,Noto Sans SC,sans-serif';
 
-const CZ={b:'布',c:'克',d:'德',f:'夫',g:'格',h:'赫',j:'吉',k:'克',l:'尔',m:'姆',n:'恩',p:'普',r:'尔',s:'斯',t:'特',v:'夫',w:'夫',y:'伊',z:'兹',sh:'什',ch:'奇'};
+const CH={
+'':'阿埃伊奥乌',b:'巴贝比博布',c:'卡塞西科库',
+d:'达德迪多杜',f:'法费菲福富',g:'加格吉戈古',
+h:'哈赫希霍胡',j:'贾杰吉乔朱',k:'卡凯基科库',
+l:'拉勒利洛卢',m:'马梅米莫穆',n:'娜内尼诺努',
+p:'帕佩皮波普',r:'拉雷里洛鲁',s:'萨塞西索苏',
+t:'塔特蒂托图',v:'瓦维维沃武',w:'瓦韦威沃乌',
+y:'雅耶伊约尤',z:'扎泽兹佐祖',
+sh:'沙谢希肖舒',ch:'查切奇乔楚'
+};
 
-// Chinese character choices based on sound, not name meaning.
+const CZ={
+b:'布',c:'克',d:'德',f:'夫',g:'格',h:'赫',j:'吉',
+k:'克',l:'尔',m:'姆',n:'恩',p:'普',r:'尔',s:'斯',
+t:'特',v:'夫',w:'夫',y:'伊',z:'兹',sh:'什',ch:'奇'
+};
+
 function hanzi(w){
   w=prep(w).replace(/ng(?![aeiou])/g,'n');
 
@@ -351,10 +421,19 @@ function hanzi(w){
   return o;
 }
 
-const RU={a:'а',b:'б',d:'д',e:'е',f:'ф',g:'г',h:'х',i:'и',j:'дж',k:'к',l:'л',m:'м',n:'н',o:'о',p:'п',r:'р',s:'с',t:'т',u:'у',v:'в',w:'в',z:'з'};
-const RT={sh:'ш',ch:'ч',zh:'ж',kh:'х',ts:'ц',ph:'ф',th:'т',ck:'к',ya:'я',yu:'ю',yo:'ё',ye:'е',ee:'и',oo:'у'};
+// 8. RUSSIAN
+const RU={
+a:'а',b:'б',d:'д',e:'е',f:'ф',g:'г',h:'х',
+i:'и',j:'дж',k:'к',l:'л',m:'м',n:'н',o:'о',
+p:'п',r:'р',s:'с',t:'т',u:'у',v:'в',w:'в',z:'з'
+};
 
-// Russian Cyrillic sound spelling.
+const RT={
+sh:'ш',ch:'ч',zh:'ж',kh:'х',ts:'ц',ph:'ф',
+th:'т',ck:'к',ya:'я',yu:'ю',yo:'ё',ye:'е',
+ee:'и',oo:'у'
+};
+
 function russian(w){
   let o='',i=0;
 
@@ -383,44 +462,26 @@ function russian(w){
   return o;
 }
 
-// Spanish-style spelling. This is an approximation, not a translation.
-function spanish(w){
-  return w
-    .replace(/ph/g,'f')
-    .replace(/th/g,'t')
-    .replace(/ck/g,'k')
-    .replace(/qu/g,'k')
-    .replace(/c(?=[eiy])/g,'s')
-    .replace(/g(?=[eiy])/g,'j')
-    .replace(/w/g,'gu')
-    .replace(/x/g,'ks')
-    .replace(/z/g,'s')
-    .replace(/h/g,'');
-}
-
-// Italian-style spelling. This is also a sound-based approximation.
-function italian(w){
-  return w
-    .replace(/ph/g,'f')
-    .replace(/th/g,'t')
-    .replace(/sh/g,'sci')
-    .replace(/j/g,'gi')
-    .replace(/w/g,'u')
-    .replace(/y/g,'i')
-    .replace(/x/g,'cs')
-    .replace(/k/g,'c')
-    .replace(/h/g,'');
-}
-
+// 9. THAI
 const TH='Thonburi,Leelawadee UI,Tahoma,Noto Sans Thai,sans-serif';
-const TC={b:'บ',d:'ด',f:'ฟ',g:'ก',h:'ฮ',j:'จ',k:'ค',l:'ล',m:'ม',n:'น',p:'พ',r:'ร',s:'ส',t:'ท',v:'ว',w:'ว',y:'ย',z:'ซ',sh:'ช',ch:'ช'};
 
-// Thai sound spelling.
+const TC={
+b:'บ',d:'ด',f:'ฟ',g:'ก',h:'ฮ',j:'จ',k:'ค',
+l:'ล',m:'ม',n:'น',p:'พ',r:'ร',s:'ส',t:'ท',
+v:'ว',w:'ว',y:'ย',z:'ซ',sh:'ช',ch:'ช'
+};
+
 function thai(w){
-  w=prep(w).replace(/ee/g,'i').replace(/oo/g,'u').replace(/a([^aeiou])e$/,'e$1').replace(/e$/,'').replace(/y(?![aeiou])/g,'i');
+  w=prep(w).replace(/ee/g,'i').replace(/oo/g,'u')
+    .replace(/a([^aeiou])e$/,'e$1')
+    .replace(/e$/,'')
+    .replace(/y(?![aeiou])/g,'i');
 
   const V='aeiou';
-  const mk=(c,v)=>v==='e'?'เ'+c:v==='o'?'โ'+c:v==='a'?c+'า':v==='i'?c+'ิ':c+'ู';
+  const mk=(c,v)=>v==='e'?'เ'+c:
+    v==='o'?'โ'+c:
+    v==='a'?c+'า':
+    v==='i'?c+'ิ':c+'ู';
 
   let o='',i=0;
 
@@ -455,32 +516,70 @@ function thai(w){
   return o;
 }
 
+// 10. SPANISH
+// Approximate Spanish-style spelling.
+function spanish(w){
+  return w
+    .replace(/ph/g,'f')
+    .replace(/th/g,'t')
+    .replace(/sh/g,'ch')
+    .replace(/ck/g,'k')
+    .replace(/qu/g,'k')
+    .replace(/c(?=[eiy])/g,'s')
+    .replace(/g(?=[eiy])/g,'j')
+    .replace(/j/g,'j')
+    .replace(/w/g,'gu')
+    .replace(/x/g,'ks')
+    .replace(/z/g,'s')
+    .replace(/h/g,'');
+}
+
+// 11. PORTUGUESE
+// Approximate Portuguese-style spelling.
+function portuguese(w){
+  return w
+    .replace(/ph/g,'f')
+    .replace(/th/g,'t')
+    .replace(/sh/g,'ch')
+    .replace(/ck/g,'k')
+    .replace(/qu/g,'k')
+    .replace(/c(?=[eiy])/g,'s')
+    .replace(/g(?=[eiy])/g,'j')
+    .replace(/j/g,'j')
+    .replace(/w/g,'u')
+    .replace(/y/g,'i')
+    .replace(/x/g,'ks')
+    .replace(/k/g,'c')
+    .replace(/h/g,'');
+}
+
+// 12. LANGUAGE LIST
 const JP='"Hiragino Sans","Yu Gothic","Noto Sans CJK JP","Noto Sans JP",Meiryo,sans-serif';
 const AR='"Noto Naskh Arabic","Geeza Pro","Segoe UI",Tahoma,Arial,sans-serif';
 const SS='system-ui,"Segoe UI",Arial,sans-serif';
 
-// The nine language cards shown on the page.
 const LANGS=[
- {id:'english',name:'English',nat:'English',col:'#e2574c',k:'l'},
- {id:'arabic',name:'Arabic',nat:'العربية',col:'#e8963a',k:'a'},
- {id:'japanese',name:'Japanese',nat:'日本語',col:'#3d9a6b',k:'j'},
- {id:'korean',name:'Korean',nat:'한국어',col:'#3b82c4',k:'k'},
- {id:'chinese',name:'Chinese (Mandarin)',nat:'中文',col:'#8a5cc7',k:'z'},
- {id:'russian',name:'Russian',nat:'Русский',col:'#d1478a',k:'r'},
- {id:'thai',name:'Thai',nat:'ไทย',col:'#2aa6a6',k:'t'},
- {id:'spanish',name:'Spanish',nat:'Español',col:'#e0a12e',k:'s'},
- {id:'italian',name:'Italian',nat:'Italiano',col:'#269b70',k:'i'}
+  {id:'english',name:'English',nat:'English',col:'#e2574c',k:'l'},
+  {id:'arabic',name:'Arabic',nat:'العربية',col:'#e8963a',k:'a'},
+  {id:'japanese',name:'Japanese',nat:'日本語',col:'#3d9a6b',k:'j'},
+  {id:'korean',name:'Korean',nat:'한국어',col:'#3b82c4',k:'k'},
+  {id:'chinese',name:'Chinese (Mandarin)',nat:'中文',col:'#8a5cc7',k:'z'},
+  {id:'russian',name:'Russian',nat:'Русский',col:'#d1478a',k:'r'},
+  {id:'thai',name:'Thai',nat:'ไทย',col:'#2aa6a6',k:'t'},
+  {id:'spanish',name:'Spanish',nat:'Español',col:'#e0a12e',k:'s'},
+  {id:'portuguese',name:'Portuguese',nat:'Português',col:'#269b70',k:'p'}
 ];
 
-// 5. BUILD all nine versions of the name.
+// 13. BUILD THE NINE LANGUAGE RESULTS
 function build(name){
   const hasAr=/[\u0600-\u06FF]/.test(name);
   const hasJP=/[\u3040-\u30ff\u4e00-\u9fff]/.test(name);
-  const hasTH=/[฀-๿]/.test(name);
-  const words=clean(name);
+  const hasTH=/[\u0E00-\u0E7F]/.test(name);
   const hasKR=/[가-힣]/.test(name);
   const hasZH=/[一-鿿]/.test(name);
   const hasCY=/[Ѐ-ӿ]/.test(name);
+
+  const words=clean(name);
 
   return LANGS.map(L=>{
     let text='',grid=null,note='';
@@ -525,10 +624,10 @@ function build(name){
       grid=text?latinGrid(text):null;
       note='Spanish-style · approximate';
 
-    }else if(L.k==='i'){
-      text=words.map(italian).join(' ');
+    }else if(L.k==='p'){
+      text=words.map(portuguese).join(' ');
       grid=text?latinGrid(text):null;
-      note='Italian-style · approximate';
+      note='Portuguese-style · approximate';
     }
 
     if(!grid){
@@ -540,7 +639,7 @@ function build(name){
   });
 }
 
-// 6. DRAW THE PIXELS on a canvas.
+// 14. DRAW PIXEL ART
 function draw(cv,g,col,cell,o={}){
   const pad=o.pad??8;
   const dpr=o.dpr??(window.devicePixelRatio||1);
@@ -580,8 +679,12 @@ function draw(cv,g,col,cell,o={}){
   }
 }
 
+// 15. TITLE COLOURS AND ANIMATION
 const PAL=LANGS.map(l=>l.col);
-const VIV=['#ff3b3b','#ff9f1a','#2ee66b','#2f9bff','#a855ff','#ff3dac','#14d9c5'];
+const VIV=[
+  '#ff3b3b','#ff9f1a','#2ee66b','#2f9bff',
+  '#a855ff','#ff3dac','#14d9c5'
+];
 
 const RGB=VIV.flatMap(h=>{
   const c=[1,3,5].map(k=>parseInt(h.substr(k,2),16));
@@ -594,27 +697,41 @@ function pc(p){
   const a=Math.floor(p),f=p-a;
   const A=RGB[a%RGB.length],B=RGB[(a+1)%RGB.length];
   const s=f*f*(3-2*f);
-  return 'rgb('+A.map((v,k)=>Math.round(v+(B[k]-v)*s)).join(',')+')';
+
+  return 'rgb('+A.map((v,k)=>
+    Math.round(v+(B[k]-v)*s)
+  ).join(',')+')';
 }
 
 let TG=null,TCELL=8;
 
 function paintTitle(now){
-  draw(document.getElementById('title'),TG,(i,w)=>pc(i/w*.4-now/15000),TCELL,{pad:4});
+  draw(
+    document.getElementById('title'),
+    TG,
+    (i,w)=>pc(i/w*.4-now/15000),
+    TCELL,
+    {pad:4}
+  );
 }
 
 function drawTitle(){
   TG=latinGrid('PIXEL NAMES');
-  TCELL=Math.max(3,Math.min(9,Math.floor((Math.min(innerWidth-48,720))/TG.w)));
+  TCELL=Math.max(
+    3,
+    Math.min(9,Math.floor(Math.min(innerWidth-48,720)/TG.w))
+  );
   paintTitle(performance.now());
 }
 
+// 16. PAGE ELEMENTS
 const $=id=>document.getElementById(id);
 
 let R=[],DL=null,NAME='';
 
 try{
-  window.claude&&claude.use('downloads').then(d=>DL=d).catch(()=>{});
+  window.claude&&claude.use('downloads')
+    .then(d=>DL=d).catch(()=>{});
 }catch(e){}
 
 function toast(m){
@@ -625,6 +742,7 @@ function toast(m){
   toast.t=setTimeout(()=>t.classList.remove('on'),2400);
 }
 
+// 17. SAVE IMAGES
 async function save(blob,fn){
   if(DL){
     try{
@@ -643,6 +761,7 @@ async function save(blob,fn){
   document.body.appendChild(a);
   a.click();
   a.remove();
+
   setTimeout(()=>URL.revokeObjectURL(a.href),4000);
 }
 
@@ -653,17 +772,24 @@ const slug=s=>s.toLowerCase()
   .replace(/[^a-z0-9]+/g,'-')
   .replace(/^-|-$/g,'')||'name';
 
-// Download one language card as a PNG image.
+// Download one card.
 async function dlOne(r){
   const cv=document.createElement('canvas');
   const cell=Math.min(24,Math.floor(2400/r.grid.w));
 
-  draw(cv,r.grid,r.col,cell,{pad:cell*3,bg:'#f8f5ef',dpr:1});
+  draw(cv,r.grid,r.col,cell,{
+    pad:cell*3,
+    bg:'#f8f5ef',
+    dpr:1
+  });
 
-  save(await toBlob(cv),'pixel-name-'+slug(NAME)+'-'+r.id+'.png');
+  save(
+    await toBlob(cv),
+    'pixel-name-'+slug(NAME)+'-'+r.id+'.png'
+  );
 }
 
-// Download all available language cards in one large PNG image.
+// Download all cards together.
 async function dlAll(){
   const items=R.filter(r=>r.grid);
   const W=1400,rowPad=70;
@@ -683,6 +809,7 @@ async function dlAll(){
 
   x.fillStyle='#f8f5ef';
   x.fillRect(0,0,W,H);
+
   x.fillStyle='#2a2830';
   x.font='700 38px '+SS;
   x.textBaseline='top';
@@ -699,27 +826,38 @@ async function dlAll(){
     x.fillText(r.name+' · '+r.nat,88,y);
 
     const t=document.createElement('canvas');
-    draw(t,r.grid,r.col,cells[i],{pad:0,dpr:1});
+
+    draw(t,r.grid,r.col,cells[i],{
+      pad:0,
+      dpr:1
+    });
 
     x.drawImage(t,80,y+46);
     y+=r.grid.h*cells[i]+rowPad+30;
   });
 
-  save(await toBlob(cv),'pixel-name-'+slug(NAME)+'-all.png');
+  save(
+    await toBlob(cv),
+    'pixel-name-'+slug(NAME)+'-all.png'
+  );
 }
 
+// Fit the pixel pictures inside their cards.
 function layout(){
   R.forEach(r=>{
     if(!r.grid)return;
 
     const aw=r.art.clientWidth-12;
-    const cell=Math.max(2,Math.min(14,Math.floor((aw-16)/r.grid.w)));
+    const cell=Math.max(
+      2,
+      Math.min(14,Math.floor((aw-16)/r.grid.w))
+    );
 
     draw(r.cv,r.grid,r.col,cell);
   });
 }
 
-// 7. MAIN BUTTON: check the name, make cards, and show results.
+// 18. GENERATE THE RESULTS
 function generate(){
   const inp=$('name');
   const name=inp.value.replace(/\s+/g,' ').trim().slice(0,24);
@@ -728,6 +866,7 @@ function generate(){
     inp.classList.remove('shake');
     void inp.offsetWidth;
     inp.classList.add('shake');
+
     $('hint').textContent='Please type your name first 🙂';
     inp.focus();
     return;
@@ -741,11 +880,15 @@ function generate(){
 
   R=build(name);
 
-  R.forEach((r,i)=>{
+  R.forEach(r=>{
     const c=document.createElement('article');
     c.className='card';
 
-    c.innerHTML='<div class="ch"><span class="dot"></span><span class="ln"></span><span class="nat"></span></div><div class="art"></div><div class="txt"></div><div class="note"></div>';
+    c.innerHTML=
+      '<div class="ch"><span class="dot"></span>'+
+      '<span class="ln"></span><span class="nat"></span></div>'+
+      '<div class="art"></div><div class="txt"></div>'+
+      '<div class="note"></div>';
 
     c.querySelector('.dot').style.background=r.col;
     c.querySelector('.ln').textContent=r.name;
@@ -779,9 +922,15 @@ function generate(){
 
   layout();
 
-  setTimeout(()=>$('results').scrollIntoView({behavior:'smooth',block:'start'}),80);
+  setTimeout(()=>{
+    $('results').scrollIntoView({
+      behavior:'smooth',
+      block:'start'
+    });
+  },80);
 }
 
+// 19. BUTTONS AND KEYBOARD
 $('go').onclick=generate;
 $('all').onclick=dlAll;
 
@@ -789,31 +938,43 @@ $('name').addEventListener('keydown',e=>{
   if(e.key==='Enter')generate();
 });
 
+// Resize the title and cards when the browser changes size.
 let rt;
 
 addEventListener('resize',()=>{
   clearTimeout(rt);
+
   rt=setTimeout(()=>{
     drawTitle();
     if(R.length)layout();
   },150);
 });
 
+// 20. START THE WEBSITE
 drawTitle();
 
 (function flow(t){
   if(!matchMedia('(prefers-reduced-motion:reduce)').matches){
     paintTitle(t);
   }
+
   requestAnimationFrame(flow);
 })(0);
 
+// Floating background decorations.
 for(let i=0;i<16;i++){
   const d=document.createElement('div');
   const s=6+Math.floor(Math.random()*3)*4;
 
   d.className='deco';
-  d.style.cssText='width:'+s+'px;height:'+s+'px;left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;background:'+PAL[i%PAL.length]+';animation-delay:-'+Math.random()*3+'s;opacity:'+(.18+Math.random()*.25);
+
+  d.style.cssText=
+    'width:'+s+'px;height:'+s+'px;'+
+    'left:'+Math.random()*100+'%;'+
+    'top:'+Math.random()*100+'%;'+
+    'background:'+PAL[i%PAL.length]+';'+
+    'animation-delay:-'+Math.random()*3+'s;'+
+    'opacity:'+(.18+Math.random()*.25);
 
   document.body.appendChild(d);
 }
