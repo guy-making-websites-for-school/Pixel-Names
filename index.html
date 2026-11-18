@@ -1,34 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Pixel Names – Your Name, Pixel Perfect</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pixel Names - Your Name, Pixel Perfect</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+  <div class="background-grid"></div>
+  <div class="pixel-background" id="pixelBackground"></div>
+
   <main>
     <header>
       <h1 class="sr">Pixel Names</h1>
-      <canvas id="title" aria-hidden="true"></canvas>
+      <canvas id="title"></canvas>
+
       <p class="sub">Your Name, Pixel Perfect.</p>
-      <p class="lead">See your name in nine language styles.</p>
+      <p class="lead">See your name in nine different writing systems.</p>
 
       <div class="box">
         <input id="name" type="text" maxlength="24"
-          placeholder="Type your name…" autocomplete="off"
-          aria-label="Your name">
+          placeholder="Type your name..." autocomplete="off">
         <button class="go" id="go">Generate ✨</button>
       </div>
 
       <p class="hint" id="hint">Try: Samarth, Maria or Zoë</p>
     </header>
 
-    <section id="results" aria-live="polite">
+    <section id="results">
       <div class="rh">
         <h2 id="rt"></h2>
-        <button class="all" id="all">⬇ Download all (one image)</button>
+        <button class="all" id="all">⬇ Download all</button>
       </div>
+
       <div class="grid" id="grid"></div>
     </section>
 
@@ -37,7 +42,20 @@
     </footer>
   </main>
 
+  <!-- Full-screen language viewer -->
+  <div id="fullscreen">
+    <div class="full-content">
+      <div class="full-language" id="fullLanguage"></div>
+      <div class="full-name" id="fullName"></div>
+      <div class="full-note" id="fullNote"></div>
+      <div class="full-art" id="fullArt"></div>
+    </div>
+
+    <button id="fullDownload">⬇ Download</button>
+  </div>
+
   <div id="toast"></div>
+
   <script src="script.js" defer></script>
 </body>
 </html>
