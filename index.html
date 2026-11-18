@@ -1,61 +1,61 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Pixel Names - Your Name, Pixel Perfect</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixel Names</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <div class="background-grid"></div>
-  <div class="pixel-background" id="pixelBackground"></div>
+  <div class="background-pixels" id="backgroundPixels"></div>
+
+  <header>
+    <h1 id="title">PIXEL NAMES</h1>
+    <p class="subtitle">Turn your name into pixel art across the world!</p>
+  </header>
 
   <main>
-    <header>
-      <h1 class="sr">Pixel Names</h1>
-      <canvas id="title"></canvas>
-
-      <p class="sub">Your Name, Pixel Perfect.</p>
-      <p class="lead">See your name in nine different writing systems.</p>
-
-      <div class="box">
-        <input id="name" type="text" maxlength="24"
-          placeholder="Type your name..." autocomplete="off">
-        <button class="go" id="go">Generate ✨</button>
-      </div>
-
-      <p class="hint" id="hint">Try: Samarth, Maria or Zoë</p>
-    </header>
-
-    <section id="results">
-      <div class="rh">
-        <h2 id="rt"></h2>
-        <button class="all" id="all">⬇ Download all</button>
-      </div>
-
-      <div class="grid" id="grid"></div>
+    <section class="generator">
+      <input
+        type="text"
+        id="nameInput"
+        placeholder="Enter your name..."
+        maxlength="30"
+      >
+      <button id="generateBtn">Generate Names</button>
     </section>
 
-    <footer>
-      Sound-based spellings are approximations, not translations.
-    </footer>
+    <p class="instruction">
+      Click any language card to open it in fullscreen.
+    </p>
+
+    <section id="results" class="results"></section>
+
+    <button id="downloadAll" class="download-all">
+      Download All Names
+    </button>
   </main>
 
-  <!-- Full-screen language viewer -->
-  <div id="fullscreen">
-    <div class="full-content">
-      <div class="full-language" id="fullLanguage"></div>
-      <div class="full-name" id="fullName"></div>
-      <div class="full-note" id="fullNote"></div>
-      <div class="full-art" id="fullArt"></div>
-    </div>
+  <div id="fullscreen" class="fullscreen">
+    <div class="fullscreen-content">
+      <p id="fullLanguage" class="full-language"></p>
+      <h2 id="fullName"></h2>
+      <p id="fullNote" class="full-note"></p>
 
-    <button id="fullDownload">⬇ Download</button>
+      <canvas id="fullArt"></canvas>
+
+      <button id="fullDownload" class="full-download">
+        Download PNG
+      </button>
+    </div>
   </div>
 
-  <div id="toast"></div>
+  <footer>
+    <p>Made with pixels and creativity.</p>
+  </footer>
 
-  <script src="script.js" defer></script>
+  <script src="script.js"></script>
 </body>
 </html>
